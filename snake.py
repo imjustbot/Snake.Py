@@ -3,11 +3,14 @@ import time
 import random 
 
 CORPO = [] 
+punteggio = 0
+punteggio_massimo = 0
 
 SCHERMO = turtle.Screen()
 SCHERMO.title("Snake")
 SCHERMO.bgcolor("black")
 SCHERMO.setup(width=600, height=600)
+SCHERMO.tracer(0)
 
 TESTA = turtle.Turtle()
 TESTA.shape("square")
@@ -21,6 +24,14 @@ CIBO.shape("circle")
 CIBO.color("yellow")
 CIBO.penup()
 CIBO.goto(0, 100)
+
+PENNA = turtle.Turtle()
+PENNA.speed(0)
+PENNA.color("white")
+PENNA.penup()
+PENNA.hideturtle()
+PENNA.goto(0, 260)
+PENNA.write("Punti: 0, Record: 0", align="center", font=("Courier", 24, "normal"))
 
 def muovi():
 
@@ -87,13 +98,36 @@ SCHERMO.onkeypress(va_sinistra, "Left")
 
 while True:
     SCHERMO.update()
+
+    if TESTA.xcor() > 290 or TESTA.xcor() < -290 or TESTA.ycor() > 290 or TESTA.ycor() < -290:
+        time.sleep(1)
+        TESTA.goto(0, 0)
+        TESTA.direction = "stop"
+        for pezzo in CORPO:
+            pezzo.goto(1000, 1000)
+        CORPO.clear()
+        punteggio = 0
+        PENNA.clear()
+        PENNA.write(f"Punti: {punteggio}  Record: {punteggio_massimo}", align="center", font=("Courier", 24, "normal"))
+
+    for indice in range(len(CORPO) - 1, 0, -1):
+        X_PRECEDENTE = CORPO[indice - 1].xcor()
+        Y_PRECEDENTE = CORPO[indice - 1].ycor()
+        CORPO[indice].goto(X_PRECEDENTE, Y_PRECEDENTE)
+
+    if len(CORPO) > 0:
+        X_TESTA = TESTA.xcor()
+        Y_TESTA = TESTA.ycor()
+        CORPO[0].goto(X_TESTA, Y_TESTA)
+
     muovi()
+
 
     if TESTA.distance(CIBO) < 20:
 
-        X_CASUALE = random.randint(-280, 280)
+        X_CASUALE = random.randint(-14, 14) * 20
 
-        Y_CASUALE = random.randint(-280, 280)
+        Y_CASUALE = random.randint(-14, 14) * 20
         CIBO.goto(X_CASUALE, Y_CASUALE)
 
     
@@ -104,14 +138,19 @@ while True:
         NUOVO_PEZZO.penup()
         CORPO.append(NUOVO_PEZZO)
 
-    if len(CORPO) > 0:
+        punteggio += 1
+        if punteggio > punteggio_massimo:
+            punteggio_massimo = punteggio
+        PENNA.clear()
+        PENNA.write(f"Punti: {punteggio}  Record: {punteggio_massimo}", align="center", font=("Courier", 24, "normal"))
 
-        X_TESTA = TESTA.xcor()
-        Y_TESTA = TESTA.ycor()
-
-        CORPO[0].goto(X_TESTA, Y_TESTA)
 
     time.sleep(0.1)
+
+
+
+
+
 
 
 
